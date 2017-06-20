@@ -1,0 +1,127 @@
+﻿
+@{
+    Validation.RequireField("textNome", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("dtNascimento", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("opRadio", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("sSala", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("sTurma", "CAMPO OBRIGATÓRIO!");
+}
+
+<!--Conexao com banco-->
+@{
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+
+    var sala = db.Query("SELECT*FROM Sala");
+    var turma = db.Query("SELECT*FROM Turma");
+
+    db.Close();
+}
+
+@{
+    var cpfquery = Request.QueryString["id2"];
+    if (IsPost && Validation.IsValid())
+    {
+        var dbV = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+        <!--Dados da Criança-->
+        string cpfResponsavel = Request.Form["textCpf"];
+        string nome = Request.Form["textNome"];
+        DateTime dataNascimento = Request.Form["dtNascimento"].AsDateTime();
+        DateTime dataMatricula = DateTime.Today;
+        string sexo = Request.Form["opRadio"];
+        string observacoes = Request.Form["taObs"];
+        decimal idTurma = Request.Form["sTurma"].AsDecimal();
+        decimal idSala = Request.Form["sSala"].AsDecimal();
+        
+
+        dbV.Execute("INSERT INTO Crianca (nome, sexo, dtNascimento, dtMatricula, observacoes, idTurma, idSala, cpfResponsavel) VALUES(@0, @1, @2, @3, @4, @5, @6, @7)", nome, sexo, dataNascimento, dataMatricula, observacoes, idTurma, idSala, cpfResponsavel);
+
+        dbV.Close();
+    }
+}
+
+
+<h3 class="text-primary">Matrícula da Criança</h3>
+
+<!--Dados da Crianca-->
+<form method="post" action="">
+    <h4 class="text-info">Dados da Criança</h4>
+    <div class="row">
+    </div>
+    <input type="text" value="@cpfquery" />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="textNome">Nome: </label>
+                <input type="text" name="textNome" id="nome" placeholder="Nome..." class="form-control" />
+                @Html.ValidationMessage("textNome")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="dtNascimento">Data de Nascimento:</label>
+                <input type="text" name="dtNascimento" id="dtNasc" placeholder="00/00/0000" class="form-control" />
+                @Html.ValidationMessage("dtNascimento")
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="rSexo">Sexo:</label>
+                <p></p>
+                <label class="radio-inline">
+                    <input type="radio" value="M" name="opRadio">Masculino
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="F" name="opRadio">Feminino
+                </label><br />
+                @Html.ValidationMessage("opRadio")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="sala">Sala:</label>
+                <select name="sSala" class="form-control">
+                    @foreach (var s in sala)
+                    {
+                        <option value="@s.idSala">@s.nome</option>
+                    }
+                </select>
+                @Html.ValidationMessage("sSala")
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="sTurma" class="form-control">
+                    @foreach (var t in turma)
+                    {
+                        <option value="@t.idTurma">@t.periodo</option>
+                    }
+                </select>
+                @Html.ValidationMessage("sTurma")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="taObs">Observações:</label>
+                <textarea name="taObs" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+    <a href="~/Index.cshtml" class="btn btn-danger">Cancelar</a> | <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#dtNasc').mask("00/00/0000");
+        });
+
+    </script>
+}

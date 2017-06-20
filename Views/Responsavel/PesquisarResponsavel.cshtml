@@ -1,0 +1,125 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{ 
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+    var responsavel = db.Query(@"SELECT r.cpf 'cpfResp', r.nome 'nomeResp', r.dataNascimento 'dtNascResp', r.sexo 'sexoResp', r.endereco 'end', r.numero 'num', r.bairro 'bairro', r.telefone1 'tel1Resp', r.telefone2 'tel2Resp', r.email 'emailResp' FROM Responsavel r");
+
+    db.Close();
+
+    bool buscando = false;
+}
+
+<h3 class="text-center"> Responsáveis Cadastrados </h3>
+<p></p><br />
+<form method="post" action="">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-9">
+            <input type="text" name="txtBuscar" class="form-control" placeholder="Pesquisar..." />
+        </div>
+        <div class="col-md-2">
+            <input type="submit" class="btn btn-primary" value="Buscar" />
+        </div>
+    </div>
+    <p></p><br />
+    <hr />
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ 
+            if (IsPost)
+            {
+                var db2 = WebMatrix.Data.Database.Open("dbBancoPIM");
+                var texto = Request.Form["txtBuscar"];
+
+                var dados = db2.Query(@"SELECT r.cpf 'cpfResp', r.nome 'nomeResp', r.dataNascimento 'dtNascResp', r.sexo 'sexoResp', r.endereco 'end', r.numero 'num', r.bairro 'bairro', r.telefone1 'tel1Resp', r.telefone2 'tel2Resp', r.email 'emailResp' 
+                                        FROM Responsavel r
+                                        WHERE r.nome LIKE @0", "%" + texto + "%");
+
+                db2.Close();
+
+                buscando = true;
+
+                if (buscando)
+                {
+                    foreach (var d in dados)
+                    {
+                        <tr>
+                            <td>@d.cpfResp</td>
+                            <td>@d.nomeResp</td>
+                            <td>@d.tel1Resp</td>
+                            <td>@d.emailResp</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-success btnDetalhes text-center" data-value="@d.cpfResp"><span class="glyphicon glyphicon-list-alt"></span>Ficha</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-Excluir text-center" data-excluir="@d.cpfResp"><span class="glyphicon glyphicon-trash"></span>Excluir</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            else
+            {
+                foreach (var r in responsavel)
+                {
+                    <tr>
+                        <td>@r.cpfResp</td>
+                        <td>@r.nomeResp</td>
+                        <td>@r.tel1Resp</td>
+                        <td>@r.emailResp</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-success btnDetalhes text-center" data-value="@r.cpfResp"><span class="glyphicon glyphicon-list-alt"></span>Ficha</button>
+                            <button type="button" class="btn btn-sm btn-danger btn-Excluir text-center" data-excluir="@r.cpfResp"><span class="glyphicon glyphicon-trash"></span>Excluir</button>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="modalResponsavel" tabindex="-1" role="dialog" aria-labelledby="modalRespLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="conteudoModal">
+                    <!-- Render Modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+        $(document).ready(function () {
+            $(".btnDetalhes").click(function () {
+                var id = $(this).data("value");
+                $("#conteudoModal").load("/Views/Responsavel/FichaResponsavel.cshtml?cpf=" + id,
+                    function () {
+                        $('#modalResponsavel').modal('show')
+                    });
+            });
+
+            $(".btn-Excluir").click(function () {
+                var id = $(this).data("excluir");
+                $("#conteudoModal").load("/Views/Responsavel/DeleteResponsavel.cshtml?cpf=" + id,
+                    function () {
+                        $('#modalResponsavel').modal('show')
+                });
+            });
+        });
+</script>
+}
+ 

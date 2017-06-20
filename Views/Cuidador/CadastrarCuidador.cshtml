@@ -1,0 +1,144 @@
+﻿@{
+    Validation.RequireField("textCpf", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("textNome", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("dtNascimento", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("tel1", "CAMPO OBRIGATÓRIO!");
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--Conexao com banco-->
+@{
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    var sala = db.Query("SELECT*FROM Sala");
+    var turma = db.Query("SELECT*FROM Turma");
+
+    db.Close();
+}
+
+<form method="post" action="~/DAL/CuidadorDAL/CadastroCuidadorDAL.cshtml">
+    <h3 class="text-primary">Cadastro do Cuidador</h3>
+    <hr />
+    <!--Dados do Cuidador-->
+    <h4 class="text-info">Dados do Cuidador</h4>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="textCpf">CPF: </label>
+                <input type="text" name="textCpf" id="cpf" placeholder="000.000.000-00" class="form-control" />
+                @Html.ValidationMessage("textCpf")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="textNome">Nome: </label>
+                <input type="text" name="textNome" placeholder="Nome" class="form-control" />
+                @Html.ValidationMessage("textNome")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="dtNascimento">Data de Nascimento:</label>
+                <input type="text" name="dtNascimento" id="dtNasc" placeholder="00/00/0000" class="form-control" />
+                @Html.ValidationMessage("dtNascimento")
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="rSexo">Sexo:</label>
+                <p></p>
+                <label class="radio-inline"><input type="radio" value="M" name="opRadio">Masculino</label>
+                <label class="radio-inline"><input type="radio" value="F" name="opRadio">Feminino</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="textEndereco">Endereço: </label>
+                <input type="text" name="textEndereco" placeholder="Rua, Avenida, Via... " class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="txtNum">Nº: </label>
+                <input type="number" name="numero" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="txtBairro">Bairro: </label>
+                <input type="text" name="txtBairro" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="tel">Telefone 1: </label>
+                <input type="tel" name="tel1" id="tel" placeholder="(00)00000-0000" class="form-control" />
+                @Html.ValidationMessage("tel1")
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="tel2">Telefone 2: </label>
+                <input type="tel" name="tel2" id="tel2" placeholder="(11)11111-1111" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="textNome">Email: </label>
+                <input type="email" name="Email" placeholder="example@example.com" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="sala">Sala:</label>
+                <select name="sSala" class="form-control">
+                    @foreach (var s in sala)
+                    {
+                        <option value="@s.idSala">@s.nome</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="sTurma" class="form-control">
+                    @foreach (var t in turma)
+                    {
+                        <option value="@t.idTurma">@t.periodo</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <a href="~/Index.cshtml" class="btn btn-danger">Cancelar</a> | <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#cpf').mask("000.000.000-00");
+            $('#dtNasc').mask("00/00/0000");
+            $('#tel').mask("(00)00000-0000");
+            $('#tel2').mask("(00)00000-0000");
+        });
+
+    </script>
+}

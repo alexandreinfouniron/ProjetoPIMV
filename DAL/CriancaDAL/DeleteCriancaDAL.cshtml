@@ -1,0 +1,12 @@
+﻿@{ 
+
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    int idMatricula = Request.Form["textMatricula"].AsInt();
+
+    db.Execute("DELETE FROM Crianca WHERE idMatricula=@0", idMatricula);
+
+    db.Close();
+
+    Response.Redirect("~/Views/Crianca/PesquisaCrianca.cshtml");
+}

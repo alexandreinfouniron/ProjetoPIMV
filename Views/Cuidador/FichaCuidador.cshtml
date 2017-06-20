@@ -1,0 +1,199 @@
+﻿@{ 
+    Validation.RequireField("textCpf", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("textNomeCuidador", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("dtNascimento", "CAMPO OBRIGATÓRIO!");
+    Validation.RequireField("tel1", "CAMPO OBRIGATÓRIO!");
+}
+
+@{
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    var idCuidador = Request.QueryString["cpf"];
+    bool fichaVal = Request.QueryString["fichaVal"].AsBool();
+
+    if (idCuidador == null)
+    {
+        Response.Redirect("~/Index.cshtml");
+    }
+
+    var c = db.QuerySingle(@" SELECT c.cpf 'cpfCuidador', c.nome 'nomeCuidador', c.endereco 'endCuidador', c.numero 'numCasaCuidador', c.bairro 'bairroCuidador', c.sexo 'sexo', c.telefone1 'tel1Cuidador', c.telefone2 'tel2Cuidador', c.email 'emailCuidador', c.dtNascimento 'dtNascCuidador', c.dtAdmissao 'dtAdmissao', s.nome 'nomeSala', t.periodo 'nomePeriodo'
+FROM Cuidador c LEFT JOIN Sala s 
+on c.idSala = s.idSala LEFT JOIN Turma t
+on c.idTurma = t.idTurma WHERE c.cpf=@0",idCuidador);
+
+    var sala = db.Query("SELECT*FROM Sala");
+    var turma = db.Query("SELECT*FROM Turma");
+
+    db.Close();
+
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title text-info text-center" id="modalCuidadorLabel"> Ficha do Cuidador </h4>
+</div>
+<p></p>
+
+<form method="post" action="~/DAL/CuidadorDAL/EditarCuidadorDAL.cshtml">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="textCpf">CPF: </label>
+                <input type="text" name="textCpf" id="cpf" value="@c.cpfCuidador" placeholder="000.000.000-00" class="form-control" />
+                @Html.ValidationMessage("textCpf")
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="textNome">Nome: </label>
+                <input type="text" name="textNomeCuidador" value="@c.nomeCuidador" placeholder="Nome..." class="form-control" />
+                @Html.ValidationMessage("textNomeCuidador")
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="dtNascimento">Data de Nascimento:</label>
+                @{ 
+                    DateTime dataNascimento = c.dtNascCuidador;
+                }
+                <input type="text" name="dtNascimento" value="@c.dtNascCuidador" id="dtNasc" placeholder="00/00/0000" class="form-control" />
+                @Html.ValidationMessage("dtNascimento")
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="rSexo">Sexo:</label>
+                <p></p>
+                @if (c.sexo == "F")
+                {
+                    <label class="radio-inline"><input type="radio" value="F" name="opSexo" checked>Feminino</label>
+                    <label class="radio-inline"><input type="radio" value="M" name="opSexo">Masculino</label>
+                }
+                else
+                {
+                    <label class="radio-inline"><input type="radio" value="F" name="opSexo">Feminino</label>
+                    <label class="radio-inline"><input type="radio" value="M" name="opSexo" checked>Masculino</label>
+                }  
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="form-group">
+                <label for="textEndereco">Endereço: </label>
+                <input type="text" name="textEndCuidador" value="@c.endCuidador" placeholder="Rua, Avenida, Via... " class="form-control" />
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="txtNum">Nº: </label>
+                <input type="number" name="numero" value="@c.numCasaCuidador" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtBairro">Bairro: </label>
+                <input type="text" name="txtBairro" value="@c.bairroCuidador" placeholder="Bairro..." class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="tel">Telefone 1: </label>
+                <input type="tel" name="tel1" id="tel" value="@c.tel1Cuidador" placeholder="(00)00000-0000" class="form-control" />
+                @Html.ValidationMessage("tel1")
+            </div>
+        </div>
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="tel2">Telefone 2: </label>
+                <input type="tel" name="tel2" id="tel2" value="@c.tel2Cuidador" placeholder="(11)11111-1111" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="textNome">Email: </label>
+                <input type="email" name="textEmailCuidador" placeholder="example@example.com" value="@c.emailCuidador" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="sala">Sala:</label>
+                <select name="sSala" class="form-control">
+                    @foreach (var s in sala)
+                    {
+                        if (s.idSala == c.idSala)
+                        {
+                            <option value="@s.idSala" selected>@s.nome</option>
+                        }
+                        else
+                        {
+                            <option value="@s.idSala">@s.nome</option>
+                        }
+
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="sTurma" class="form-control">
+                    @foreach (var t in turma)
+                    {
+                        if (t.idTurma == c.idTurma)
+                        {
+                            <option value="@t.idTurma" selected>@t.periodo</option>
+                        }
+                        else
+                        {
+                            <option value="@t.idTurma">@t.periodo</option>
+                        }                       
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Sair</button>
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon glyphicon-edit"></span> Editar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#cpf').mask("000.000.000-00");
+            $('#dtNasc').mask("00/00/0000");
+            $('#tel').mask("(00)00000-0000");
+            $('#tel2').mask("(00)00000-0000");
+        });
+
+    </script>
+}

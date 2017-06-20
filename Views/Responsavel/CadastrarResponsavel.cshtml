@@ -1,0 +1,124 @@
+﻿@{
+    Validation.RequireField("textCpf", "Campo Obrigatório!");
+    Validation.RequireField("textNome", "Campo Obrigatório!");
+    Validation.RequireField("dtNascimento", "Campo Obrigatório!");
+    Validation.RequireField("opRadio", "Campo Obrigatório!");
+    Validation.RequireField("textEndereco", "Campo Obrigatório!");
+    Validation.RequireField("tel1", "Campo Obrigatório!");
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    if (IsPost && Validation.IsValid())
+    {
+        var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+        <!--Dados do Responsavel-->
+        string cpf = Request.Form["textCpf"];
+        string nome = Request.Form["textNome"];
+        DateTime dataNascimento = Request.Form["dtNascimento"].AsDateTime();
+        string sexo = Request.Form["opRadio"];
+        string endereco = Request.Form["textEndereco"];
+        string tel1 = Request.Form["tel1"];
+        string tel2 = Request.Form["tel2"];
+        string email = Request.Form["email"];
+
+        <!--Pesquisar sobre validação de formulario-->
+        db.Execute("INSERT INTO Responsavel (cpf, nome, dataNascimento, sexo, endereco, telefone1, telefone2, email) VALUES(@0, @1, @2, @3, @4, @5, @6, @7)", cpf, nome, dataNascimento, sexo, endereco, tel1, tel2, email);
+
+        db.Close();
+
+        Response.Redirect("~/Views/Responsavel/addCriancaResponsavel.cshtml?id=" + cpf);
+
+        }
+    }
+        <form method="post" action="">
+            <h3 class="text-primary">Cadastrar Responsável</h3>
+            <hr />
+
+            <!--Dados do Responsavel-->
+            <h4 class="text-info">Dados do Responsável</h4>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="texCpf">CPF: </label>
+                        <input type="text" id="cpf" name="textCpf" class="form-control" placeholder="Digite o CPF" />
+                        @Html.ValidationMessage("textCpf")
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="textNome">Nome: </label>
+                        <input type="text" name="textNome" class="form-control" placeholder="Digite o Seu Nome" />
+                        @Html.ValidationMessage("textNome")
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="dtNascimento">Data de Nascimento:</label>
+                        <input type="text" id="dtNasc" name="dtNascimento" class="form-control" placeholder="00/00/0000" />
+                        @Html.ValidationMessage("dtNascimento")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="rSexo">Sexo:</label>
+                        <p></p>
+                        <label class="radio-inline"><input type="radio" value="M" name="opRadio">Masculino</label>
+                        <label class="radio-inline"><input type="radio" value="F" name="opRadio">Feminino</label><br />                        @Html.ValidationMessage("opRadio")
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="textEndereco">Endereço: </label>
+                        <input type="text" name="textEndereco" class="form-control" placeholder="Digite o Seu Endereço" />
+                        @Html.ValidationMessage("textEndereco")
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="Tel1">Telefone 1: </label>
+                        <input type="tel" name="tel1" id="tel1" class="form-control" placeholder="(00) 0 0000-0000" />
+                        @Html.ValidationMessage("tel1")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="tel2">Telefone 2: </label>
+                        <input type="tel" name="tel2" id="tel2" class="form-control" placeholder="(00) 0 0000-0000" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="email">Email: </label>
+                        <input type="email" name="email" class="form-control" placeholder="exemplo@exemplo.com" />
+                    </div>
+                </div>
+            </div>
+            <a href="~/Index.cshtml" class="btn btn-danger">Cancelar</a> | <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+    
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#cpf').mask("000.000.000-00");
+            $('#dtNasc').mask("00/00/0000");
+            $('#tel1').mask("(00)00000-0000");
+            $('#tel2').mask("(00)00000-0000");
+        });
+
+</script>
+    }

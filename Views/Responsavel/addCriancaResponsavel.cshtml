@@ -1,0 +1,109 @@
+﻿@{
+    Validation.RequireField("textCpf", "Campo Obrigatório!");
+    Validation.RequireField("textNome", "Campo Obrigatório!");
+    Validation.RequireField("dtNascimento", "Campo Obrigatório!");
+    Validation.RequireField("opRadio", "Campo Obrigatório!");
+    Validation.RequireField("textEndereco", "Campo Obrigatório!");
+    Validation.RequireField("tel1", "Campo Obrigatório!");
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+
+        var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+        <!--Dados do Responsavel-->
+        string cpf = Request.QueryString["id"];
+
+        <!--Pesquisar sobre validação de formulario-->
+    var r = db.QuerySingle("SELECT*FROM Responsavel WHERE cpf = @0", cpf);
+    var c = db.Query(@"SELECT c.nome 'nomeCrianca', c.idMatricula 'matricula'
+                    FROM Crianca c inner join Responsavel r
+                    ON c.cpfResponsavel = r.cpf
+                    WHERE r.cpf = @0", cpf);
+
+    db.Close();
+
+    }
+<form method="post" action="">
+    <h3 class="text-primary">Cadastrar Responsável</h3>
+    <hr />
+
+    <!--Dados do Responsavel-->
+    <h4 class="text-info">Dados do Responsável</h4>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="texCpf">CPF: </label>
+                <input type="text" id="cpf" name="textCpf" value="@r.Cpf" class="form-control" />
+                @Html.ValidationMessage("textCpf")
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="textNome">Nome: </label>
+                <input type="text" name="textNome" value="@r.Nome" class="form-control" />
+                @Html.ValidationMessage("textNome")
+            </div>
+        </div>
+    </div>
+</form>
+<button class="btn btn-success btnAddCrianca" data-cpf="@cpf"><span class="glyphicon glyphicon-plus"></span> Adicionar Criança</button>
+<hr />
+<div class="col-md-6">
+    <table class="table table-condensed table-hover">
+        <thead>
+            <tr>
+                <td>Matrícula</td>
+                <td>Nome</td>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var cr in c)
+            {
+                <tr>
+                    <td>@cr.nomeCrianca</td>
+                    <td>@cr.matricula</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="conteudoModal">
+                    <!--RenderModal-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#cpf').mask("000.000.000-00");
+            $('#dtNasc').mask("00/00/0000");
+            $('#tel1').mask("(00)00000-0000");
+            $('#tel2').mask("(00)00000-0000");
+        });
+
+        $(document).ready(function () {
+            var id = $(this).data("cpf");
+            $(".btnAddCrianca").click(function () {
+                $("#conteudoModal").load("/Views/Crianca/CadastrarCrianca.cshtml?id2=" + id,
+                    function () {
+                        $('#myModal').modal('show')
+                    });
+            });
+        });
+</script>
+    }

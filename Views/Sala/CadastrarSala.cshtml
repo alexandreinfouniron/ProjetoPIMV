@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post" action="~/DAL/SalaDAL/SalaDAL.cshtml">
+
+    <h3 class="text-primary">Cadastro da Sala</h3>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="txtSala"> Sala: </label>
+                <input type="text" name="txtSala" placeholder="Nome da Sala" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <a href="~/Index.cshtml" class="btn btn-danger">Cancelar</a> | <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <link href="~/Content/bootstrap.css" rel="stylesheet" />
+        <link href="~/Content/Site.css" rel="stylesheet" />
+        <title>SCC - Sistema de Controle de Creche</title>
+    </head>
+    <body>
+        <!--Menu Principal-->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="~/Index.cshtml"><p class="logoMenu">SCC</p></a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <!--Cadastro-->
+                        <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Cadastros
+                            <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/Views/Responsavel/CadastrarResponsavel.cshtml">Nova Matrícula</a></li>
+                                <li class="divider"></li>                 
+                                <li><a href="~/Views/Cuidador/CadastrarCuidador.cshtml">Cadastrar Cuidador</a></li>
+                                <li class="divider"></li>
+                                <li><a href="~/Views/Sala/CadastrarSala.cshtml">Cadastrar Sala</a></li>
+                                <li><a href="~/Views/Turma/CadastrarTurma.cshtml">Cadastrar Turma</a></li>
+                                <li class="divider"></li>
+                                <li><a href="~/Views/Conta/CadastrarUsuarios.cshtml">Cadastrar Usuários</a></li>
+                            </ul>
+                        </li>    
+                        <li>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Pesquisas
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/Views/Crianca/PesquisaCrianca.cshtml">Criança</a></li>
+                                <li><a href="~/Views/Responsavel/PesquisarResponsavel.cshtml">Responsável</a></li>
+                                <li class="divider"></li>
+                                <li><a href="~/Views/Cuidador/PesquisarCuidador.cshtml">Cuidador</a></li>
+                                <li class="divider"></li>
+                                <li><a href="~/Views/Sala/CadastrarSala.cshtml">Sala</a></li>
+                                <li><a href="~/Views/Turma/CadastrarTurma.cshtml">Turma</a></li>
+                                <li class="divider"></li>
+                                <li><a href="~/Views/Conta/CadastrarUsuarios.cshtml">Usuários</a></li>
+                            </ul>
+                        </li>    
+                        <li>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Relatórios
+                            <span class="caret"></span>
+                        </a>
+                        
+                        </li>     
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            @RenderBody()
+        </div>
+
+        <footer>
+            <hr />
+            <p class="pCenter">@DateTime.Now.Year &copy; SCC - Sistema de Controle de Creche</p>
+        </footer>
+
+        <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script src="~/packages/jQuery.3.1.1/jquery.mask.min.js"></script>
+        <script src="~/Scripts/bootstrap.js"></script>
+        @RenderSection("Scripts", false)
+    </body>
+</html>

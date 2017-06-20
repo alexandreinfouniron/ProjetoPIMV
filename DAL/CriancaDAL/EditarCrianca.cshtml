@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    if (IsPost)
+    {
+        var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+        <!--Dados da Criança-->
+        string idMatricula = Request.Form["textMatricula"];
+        string cpfResponsavel = Request.Form["textCpfResp"];
+        string nome = Request.Form["textNomeCrianca"];
+        DateTime dtNascimento = Request.Form["dtNascimento"].AsDateTime();
+        DateTime dataMatricula = DateTime.Today;
+        string sexo = Request.Form["opRadio"];
+        string observacoes = Request.Form["taObs"];
+        decimal idTurma = Request.Form["sTurma"].AsDecimal();
+        decimal idSala = Request.Form["sSala"].AsDecimal();
+
+        <!--Pesquisar sobre validação de formulario-->
+        db.Execute(@"UPDATE Crianca SET nome=@0, sexo=@1, dtNascimento=@2, dtMatricula=@3, observacoes=@4, idTurma=@5, idSala=@6, cpfResponsavel=@7 WHERE idMatricula=@8", nome, sexo, dtNascimento, dataMatricula, observacoes, idTurma, idSala, cpfResponsavel, idMatricula);
+
+        Response.Redirect("~/Views/Crianca/PesquisaCrianca.cshtml");
+        db.Close();
+
+    }
+}

@@ -1,0 +1,122 @@
+﻿@{
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    var idCrianca = Request.QueryString["matricula"];
+    bool fichaVal = Request.QueryString["fichaVal"].AsBool();
+    if (idCrianca == null)
+    {
+        Response.Redirect("~/Index.cshtml");
+    }
+
+    var c = db.QuerySingle(@"select c.idMatricula 'Matricula', r.cpf 'cpfResponsavel', c.dtNascimento 'dtNasc', c.dtMatricula 'dtMatricula', r.nome 'nomeResp', c.nome 'nomeCrianca', s.nome 'nomeSala', s.idSala 'idSala', c.idTurma 'idTurma', t.periodo 'nomePeriodo', c.sexo 'sexo', c.Observacoes 'obs'
+                             from Crianca c left join Responsavel r
+                             on c.cpfResponsavel = r.cpf left join Sala s
+                             on c.idSala = s.idSala left join Turma t
+                             on c.idTurma = t.idTurma
+                             WHERE c.idMatricula=@0", idCrianca);
+
+    var sala = db.Query("SELECT*FROM Sala");
+    var turma = db.Query("SELECT*FROM Turma");
+
+    db.Close();
+
+
+    }
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title text-info text-center" id="myModalLabel"> Ficha da Criança </h4>
+</div>
+<p></p>
+<!--Dados da Crianca-->
+<form method="post" action="~/DAL/CriancaDAL/EditarCrianca.cshtml">
+
+     <input type="hidden" value="@c.cpfResponsavel" name="textCpfResp" />
+    <input type="hidden" value="@c.Matricula" name="textMatricula" />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="textNome">Nome: </label>
+                <input type="text" name="textNomeCrianca" value="@c.nomeCrianca" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="dtNascimento">Data de Nascimento:</label>
+                @{ 
+                    DateTime dataNascimento = c.dtNasc;
+                }
+                <input type="date" name="dtNascimento" value="@dataNascimento.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="rSexo">Sexo:</label>
+                <p></p>
+                @if (c.sexo == "M")
+                {
+                    <label class="radio-inline"><input type="radio" value="M" name="opRadio" checked>Masculino</label>
+                    <label class="radio-inline"><input type="radio" value="F" name="opRadio">Feminino</label>
+                }
+                else
+                {
+                    <label class="radio-inline"><input type="radio" value="M" name="opRadio">Masculino</label>
+                    <label class="radio-inline"><input type="radio" value="F" name="opRadio" checked>Feminino</label>
+                }                
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="sala">Sala:</label>
+                <select name="sSala" class="form-control">
+                    @foreach (var s in sala)
+                    {
+                        if (s.idSala == c.idSala)
+                        {
+                            <option value="@s.idSala" selected>@s.nome</option>
+                        }
+                        else
+                        {
+                            <option value="@s.idSala">@s.nome</option>
+                        }
+
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="sTurma" class="form-control">
+                    @foreach (var t in turma)
+                    {
+                        if (t.idTurma == c.idTurma)
+                        {
+                            <option value="@t.idTurma" selected>@t.periodo</option>
+                        }
+                        else
+                        {
+                            <option value="@t.idTurma">@t.periodo</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="taObs">Observações:</label>
+                <textarea name="taObs" class="form-control">@c.obs</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Sair</button>
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon glyphicon-edit"></span> Editar</button>
+    </div>
+</form>

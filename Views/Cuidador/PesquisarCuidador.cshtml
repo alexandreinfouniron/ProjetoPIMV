@@ -1,0 +1,127 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{ 
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    var cuidador = db.Query(@"SELECT c.cpf 'cpfCuidador', c.nome 'nomeCuidador', c.endereco 'endCuidador', c.numero 'numCasaCuidador', c.bairro 'bairroCuidador', c.sexo 'sexoCuidador', c.telefone1 'tel1Cuidador', c.telefone2 'tel2Cuidador', c.email 'emailCuidador', c.dtNascimento 'dtNascCuidador', c.dtAdmissao 'dtAdmissao', s.nome 'nomeSala', t.periodo 'nomePeriodo'
+                              FROM Cuidador c LEFT JOIN Sala s 
+                              ON c.idSala = s.idSala LEFT JOIN Turma t
+                              ON c.idTurma = t.idTurma");
+
+    db.Close();
+
+    bool buscando = false;
+}
+
+<h3 class="text-center"> Cuidadores Cadastrados </h3>
+<p></p><br />
+<form method="post" action="">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-9">
+            <input type="text" name="txtBuscar" class="form-control" placeholder="Pesquisar" />
+        </div>
+        <div class="col-md-2">
+            <input type="submit" class="btn btn-primary" value="Buscar" />
+        </div>
+    </div>
+    <p></p><br />
+    <hr />
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ 
+            if (IsPost)
+            {
+                var db2 = WebMatrix.Data.Database.Open("dbBancoPIM");
+                var texto = Request.Form["txtBuscar"];
+
+                var dados = db2.Query(@"SELECT c.cpf 'cpfCuidador', c.nome 'nomeCuidador', c.endereco 'endCuidador', c.numero 'numCasaCuidador', c.bairro 'bairroCuidador', c.sexo 'sexoCuidador', c.telefone1 'tel1Cuidador', c.telefone2 'tel2Cuidador', c.email 'emailCuidador', c.dtNascimento 'dtNascCuidador', c.dtAdmissao 'dtAdmissao', s.nome 'nomeSala', t.periodo 'nomePeriodo'
+                                        FROM Cuidador c LEFT JOIN Sala s 
+                                        ON c.idSala = s.idSala LEFT JOIN Turma t
+                                        ON c.idTurma = t.idTurma WHERE c.nome LIKE @0", "%" + texto + "%");
+
+                db2.Close();
+
+                buscando = true;
+
+                if (buscando)
+                {
+                    foreach (var d in dados)
+                    {
+                        <tr>
+                            <td>@d.cpfCuidador</td>
+                            <td>@d.nomeCuidador</td>
+                            <td>@d.tel1Cuidador</td>
+                            <td>@d.emailCuidador</td>
+                            <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-success btnDetalhes text-center" data-value="@d.cpfCuidador"><span class="glyphicon glyphicon-list-alt"></span>Ficha</button>
+                            <button type="button" class="btn btn-sm btn-danger btn-excluir text-center" data-excluir="@d.cpfCuidador"><span class="glyphicon glyphicon-trash"></span>Excluir</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            else
+            {
+                foreach (var c in cuidador)
+                {
+                    <tr>
+                        <td>@c.cpfCuidador</td>
+                        <td>@c.nomeCuidador</td>
+                        <td>@c.tel1Cuidador</td>
+                        <td>@c.emailCuidador</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-success btnDetalhes text-center" data-value="@c.cpfCuidador"><span class="glyphicon glyphicon-list-alt"></span>Ficha</button>
+                            <button type="button" class="btn btn-sm btn-danger btn-excluir text-center" data-excluir="@c.cpfCuidador"><span class="glyphicon glyphicon-trash"></span>Excluir</button>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCuidador" tabindex="-1" role="dialog" aria-labelledby="modalCuidadorLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="conteudoModal">
+                    <!-- RenderModal-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".btnDetalhes").click(function () {
+                var id = $(this).data("value");
+                $("#conteudoModal").load("~/Views/Cuidador/FichaCuidador.cshtml?cpf=" + id, function () {
+                    $('#modalCuidador').modal('show')
+                });
+            });
+
+            $(".btn-excluir").click(function () {
+                var id = $(this).data("excluir");
+                $("#conteudoModal").load("~/Views/Cuidador/DeleteCuidador.cshtml?cpf=" + id, function () {
+                    $('#modalCuidador').modal('show')
+                });
+            });
+        });
+    </script>
+    }

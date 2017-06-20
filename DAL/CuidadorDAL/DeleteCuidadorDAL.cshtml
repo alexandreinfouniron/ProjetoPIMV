@@ -1,0 +1,11 @@
+﻿@{
+    var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+    string cpfCuidador = Request.Form["textCpf"];
+
+    db.Execute("DELETE FROM Cuidador WHERE cpf=@0", cpfCuidador);
+
+    db.Close();
+
+    Response.Redirect("~/Views/Cuidador/PesquisarCuidador.cshtml");
+}

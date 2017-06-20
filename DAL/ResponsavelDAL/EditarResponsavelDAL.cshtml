@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    if (IsPost)
+    {
+        var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+
+        string cpfResp = Request.Form["textCpf"];
+        string nomeResp = Request.Form["textNomeResp"];
+        DateTime dtNascResp = Request.Form["textDtNascResp"].AsDateTime();
+        string sexoResp = Request.Form ["opSexo"];
+        string endereco = Request.Form["textEndResp"];
+        int numero = Request.Form["numCasaResp"].AsInt();
+        string bairro = Request.Form["bairroResp"];
+        string telefone1 = Request.Form["tel1Resp"];
+        string telefone2 = Request.Form["tel2Resp"];
+        string email = Request.Form["textEmailResp"];
+
+        db.Execute(@"UPDATE Responsavel SET nome=@0, dataNascimento=@1, sexo=@2, endereco=@3, numero=@4, bairro=@5, telefone1=@6, telefone2=@7, email=@8 WHERE cpf=@9", nomeResp, dtNascResp,  sexoResp, endereco, numero,bairro, telefone1, telefone2, email, cpfResp);
+
+        Response.Redirect("~/Views/Responsavel/PesquisarResponsavel.cshtml");
+        db.Close();
+    }
+}

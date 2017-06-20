@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    if (IsPost && Validation.IsValid())
+    {
+        var db = WebMatrix.Data.Database.Open("dbBancoPIM");
+
+        <!--Dados da Criança-->
+        string cpfResponsavel = Request.Form["textCpf"];
+        string nome = Request.Form["textNome"];
+        DateTime dataNascimento = Request.Form["dtNascimento"].AsDateTime();
+        DateTime dataMatricula = DateTime.Today;
+        string sexo = Request.Form["opRadio"];
+        string observacoes = Request.Form["taObs"];
+        decimal idTurma = Request.Form["sTurma"].AsDecimal();
+        decimal idSala = Request.Form["sSala"].AsDecimal();
+       
+        db.Execute("INSERT INTO Crianca (nome, sexo, dtNascimento, dtMatricula, observacoes, idTurma, idSala, cpfResponsavel) VALUES(@0, @1, @2, @3, @4, @5, @6, @7)", nome, sexo, dataNascimento, dataMatricula, observacoes, idTurma, idSala, cpfResponsavel);
+
+        db.Close();
+
+        <h1 class="text-success">Matrícula realizada com sucesso!</h1>
+        <hr />
+        <a href="~/Index.cshtml" class="btn btn-success">Voltar</a>       
+    }
+}
